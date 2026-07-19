@@ -13,7 +13,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ShellRouteImport } from './routes/_shell'
-import { Route as ShellIndexRouteImport } from './routes/_shell.index'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShellSuppliersRouteImport } from './routes/_shell.suppliers'
 import { Route as ShellSettingsRouteImport } from './routes/_shell.settings'
 import { Route as ShellSalesRouteImport } from './routes/_shell.sales'
@@ -23,6 +23,7 @@ import { Route as ShellProductsRouteImport } from './routes/_shell.products'
 import { Route as ShellPosRouteImport } from './routes/_shell.pos'
 import { Route as ShellOrdersRouteImport } from './routes/_shell.orders'
 import { Route as ShellInventoryRouteImport } from './routes/_shell.inventory'
+import { Route as ShellDashboardRouteImport } from './routes/_shell.dashboard'
 import { Route as ShellCustomersRouteImport } from './routes/_shell.customers'
 import { Route as ShellCategoriesRouteImport } from './routes/_shell.categories'
 import { Route as ShellAuditLogsRouteImport } from './routes/_shell.audit-logs'
@@ -46,10 +47,10 @@ const ShellRoute = ShellRouteImport.update({
   id: '/_shell',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ShellIndexRoute = ShellIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => ShellRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ShellSuppliersRoute = ShellSuppliersRouteImport.update({
   id: '/suppliers',
@@ -96,6 +97,11 @@ const ShellInventoryRoute = ShellInventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => ShellRoute,
 } as any)
+const ShellDashboardRoute = ShellDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => ShellRoute,
+} as any)
 const ShellCustomersRoute = ShellCustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
@@ -113,13 +119,14 @@ const ShellAuditLogsRoute = ShellAuditLogsRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof ShellIndexRoute
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/audit-logs': typeof ShellAuditLogsRoute
   '/categories': typeof ShellCategoriesRoute
   '/customers': typeof ShellCustomersRoute
+  '/dashboard': typeof ShellDashboardRoute
   '/inventory': typeof ShellInventoryRoute
   '/orders': typeof ShellOrdersRoute
   '/pos': typeof ShellPosRoute
@@ -131,12 +138,14 @@ export interface FileRoutesByFullPath {
   '/suppliers': typeof ShellSuppliersRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/audit-logs': typeof ShellAuditLogsRoute
   '/categories': typeof ShellCategoriesRoute
   '/customers': typeof ShellCustomersRoute
+  '/dashboard': typeof ShellDashboardRoute
   '/inventory': typeof ShellInventoryRoute
   '/orders': typeof ShellOrdersRoute
   '/pos': typeof ShellPosRoute
@@ -146,10 +155,10 @@ export interface FileRoutesByTo {
   '/sales': typeof ShellSalesRoute
   '/settings': typeof ShellSettingsRoute
   '/suppliers': typeof ShellSuppliersRoute
-  '/': typeof ShellIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_shell': typeof ShellRouteWithChildren
   '/auth': typeof AuthRoute
   '/shop': typeof ShopRoute
@@ -157,6 +166,7 @@ export interface FileRoutesById {
   '/_shell/audit-logs': typeof ShellAuditLogsRoute
   '/_shell/categories': typeof ShellCategoriesRoute
   '/_shell/customers': typeof ShellCustomersRoute
+  '/_shell/dashboard': typeof ShellDashboardRoute
   '/_shell/inventory': typeof ShellInventoryRoute
   '/_shell/orders': typeof ShellOrdersRoute
   '/_shell/pos': typeof ShellPosRoute
@@ -166,7 +176,6 @@ export interface FileRoutesById {
   '/_shell/sales': typeof ShellSalesRoute
   '/_shell/settings': typeof ShellSettingsRoute
   '/_shell/suppliers': typeof ShellSuppliersRoute
-  '/_shell/': typeof ShellIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/audit-logs'
     | '/categories'
     | '/customers'
+    | '/dashboard'
     | '/inventory'
     | '/orders'
     | '/pos'
@@ -189,12 +199,14 @@ export interface FileRouteTypes {
     | '/suppliers'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/auth'
     | '/shop'
     | '/sitemap.xml'
     | '/audit-logs'
     | '/categories'
     | '/customers'
+    | '/dashboard'
     | '/inventory'
     | '/orders'
     | '/pos'
@@ -204,9 +216,9 @@ export interface FileRouteTypes {
     | '/sales'
     | '/settings'
     | '/suppliers'
-    | '/'
   id:
     | '__root__'
+    | '/'
     | '/_shell'
     | '/auth'
     | '/shop'
@@ -214,6 +226,7 @@ export interface FileRouteTypes {
     | '/_shell/audit-logs'
     | '/_shell/categories'
     | '/_shell/customers'
+    | '/_shell/dashboard'
     | '/_shell/inventory'
     | '/_shell/orders'
     | '/_shell/pos'
@@ -223,10 +236,10 @@ export interface FileRouteTypes {
     | '/_shell/sales'
     | '/_shell/settings'
     | '/_shell/suppliers'
-    | '/_shell/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   ShellRoute: typeof ShellRouteWithChildren
   AuthRoute: typeof AuthRoute
   ShopRoute: typeof ShopRoute
@@ -263,12 +276,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_shell/': {
-      id: '/_shell/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof ShellIndexRouteImport
-      parentRoute: typeof ShellRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_shell/suppliers': {
       id: '/_shell/suppliers'
@@ -333,6 +346,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShellInventoryRouteImport
       parentRoute: typeof ShellRoute
     }
+    '/_shell/dashboard': {
+      id: '/_shell/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof ShellDashboardRouteImport
+      parentRoute: typeof ShellRoute
+    }
     '/_shell/customers': {
       id: '/_shell/customers'
       path: '/customers'
@@ -361,6 +381,7 @@ interface ShellRouteChildren {
   ShellAuditLogsRoute: typeof ShellAuditLogsRoute
   ShellCategoriesRoute: typeof ShellCategoriesRoute
   ShellCustomersRoute: typeof ShellCustomersRoute
+  ShellDashboardRoute: typeof ShellDashboardRoute
   ShellInventoryRoute: typeof ShellInventoryRoute
   ShellOrdersRoute: typeof ShellOrdersRoute
   ShellPosRoute: typeof ShellPosRoute
@@ -370,13 +391,13 @@ interface ShellRouteChildren {
   ShellSalesRoute: typeof ShellSalesRoute
   ShellSettingsRoute: typeof ShellSettingsRoute
   ShellSuppliersRoute: typeof ShellSuppliersRoute
-  ShellIndexRoute: typeof ShellIndexRoute
 }
 
 const ShellRouteChildren: ShellRouteChildren = {
   ShellAuditLogsRoute: ShellAuditLogsRoute,
   ShellCategoriesRoute: ShellCategoriesRoute,
   ShellCustomersRoute: ShellCustomersRoute,
+  ShellDashboardRoute: ShellDashboardRoute,
   ShellInventoryRoute: ShellInventoryRoute,
   ShellOrdersRoute: ShellOrdersRoute,
   ShellPosRoute: ShellPosRoute,
@@ -386,12 +407,12 @@ const ShellRouteChildren: ShellRouteChildren = {
   ShellSalesRoute: ShellSalesRoute,
   ShellSettingsRoute: ShellSettingsRoute,
   ShellSuppliersRoute: ShellSuppliersRoute,
-  ShellIndexRoute: ShellIndexRoute,
 }
 
 const ShellRouteWithChildren = ShellRoute._addFileChildren(ShellRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   ShellRoute: ShellRouteWithChildren,
   AuthRoute: AuthRoute,
   ShopRoute: ShopRoute,

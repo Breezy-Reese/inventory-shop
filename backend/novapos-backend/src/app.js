@@ -17,6 +17,8 @@ import saleRoutes from "./routes/sales.routes.js";
 import reportRoutes from "./routes/reports.routes.js";
 import settingsRoutes from "./routes/settings.routes.js";
 import auditLogRoutes from "./routes/auditLogs.routes.js";
+import publicRoutes from "./routes/public.routes.js";
+import orderRoutes from "./routes/orders.routes.js";
 
 export function createApp() {
   const app = express();
@@ -32,12 +34,14 @@ export function createApp() {
 
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
-  // Public
+  // Public — no login required (customer storefront)
   app.use("/api/auth", authRoutes);
+  app.use("/api/public", publicRoutes);
 
   // Everything below requires a valid bearer token
   app.use("/api", requireAuth);
 
+  app.use("/api/orders", orderRoutes);
   app.use("/api/categories", categoryRoutes);
   app.use("/api/products", productRoutes);
   app.use("/api/suppliers", supplierRoutes);

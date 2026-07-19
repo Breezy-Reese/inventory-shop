@@ -31,7 +31,7 @@ import { formatMoney } from "@/lib/format";
 import type { PublicCategory, PublicProduct } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 
-export const Route = createFileRoute("/shop")({
+export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Shop — NovaPOS" },

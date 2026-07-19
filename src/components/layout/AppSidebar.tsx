@@ -33,7 +33,7 @@ const groups = [
   {
     label: "Overview",
     items: [
-      { title: "Dashboard", url: "/", icon: LayoutDashboard },
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
       { title: "Point of Sale", url: "/pos", icon: ShoppingCart },
     ],
   },

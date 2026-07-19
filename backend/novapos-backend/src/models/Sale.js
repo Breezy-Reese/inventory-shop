@@ -22,7 +22,11 @@ const saleSchema = new mongoose.Schema(
     discount: { type: Number, default: 0 },
     tax: { type: Number, default: 0 },
     total: { type: Number, required: true },
-    paymentMethod: { type: String, enum: ["cash", "card", "mobile", "credit"], required: true },
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "card", "mobile", "credit", "online"],
+      required: true,
+    },
     status: { type: String, enum: ["completed", "refunded", "void"], default: "completed" },
     cashierId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },

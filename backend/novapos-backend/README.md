@@ -100,6 +100,65 @@ sales, reports, settings, audit logs — will be backed by this API.
   stock-adjustment/purchase-receive actions and exposed read-only via
   `GET /api/audit-logs`.
 
+## Customer-facing storefront (new)
+
+Two extra pieces beyond the original admin API:
+
+- **`/api/public/*` — no login required.** Lets customers browse active
+  products (with photos, price, description, in-stock status — never cost
+  price or exact stock counts) and place an order themselves. Prices are
+  always recomputed server-side from the current `Product` record, never
+  trusted from the client. Placing an order immediately reserves stock
+  (decrements `Product.stock`) so two customers can't both "buy" the last
+  unit; a `StockMovement` is logged with reason `"Online order"`.
+- **`/api/orders/*` — staff-only.** Lets your team see incoming online
+  orders and move them through `pending → confirmed → fulfilled` (or
+  `cancelled`). Cancelling an order automatically restocks the reserved
+  items. Marking an order `fulfilled` automatically creates a matching
+  `Sale` record (`paymentMethod: "online"`), so online revenue shows up in
+  `/reports/summary`, `/reports/sales`, and `/reports/profit` right
+  alongside in-store sales — no separate reporting needed.
+
+`Product` now also has an optional `description` field for catalog copy,
+alongside the `imageUrl` field that already existed.
+
+### Public endpoints
+
+```
+GET  /api/public/categories
+GET  /api/public/products?category=<id>&q=<search>
+GET  /api/public/products/:id
+POST /api/public/orders
+     { customerName, customerPhone, customerEmail?, fulfillmentType: "pickup"|"delivery",
+       deliveryAddress? (required if delivery), notes?,
+       items: [{ productId, quantity }] }
+GET  /api/public/orders/track?orderNumber=ORD-123456&phone=+254...
+```
+
+### Staff endpoints (require `Authorization: Bearer <token>`)
+
+```
+GET  /api/orders?status=pending
+GET  /api/orders/:id
+PUT  /api/orders/:id/status     { status: "confirmed" | "fulfilled" | "cancelled" }
+```
+
+### What's still needed on the frontend
+
+This backend is ready, but your current frontend (the Lovable admin app) is
+staff-only and behind login — there's no public page yet. You'll need two
+new things there:
+
+1. A **public storefront page** (product grid with photos, add-to-cart,
+   checkout form) that talks to `/api/public/products` and
+   `/api/public/orders` — this page must **not** require sign-in.
+2. An **Orders** screen in the admin sidebar (similar to your existing
+   Purchases screen) that lists `/api/orders`, shows status, and lets staff
+   advance/cancel orders via `PUT /api/orders/:id/status`.
+3. An **image URL field** on the existing product create/edit form, so
+   staff can attach a photo per product (`imageUrl`, plus the new
+   `description` field for catalog copy).
+
 ## API surface
 
 ```
