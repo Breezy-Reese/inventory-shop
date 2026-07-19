@@ -9,6 +9,7 @@ import {
   Receipt,
   Settings,
   ShoppingCart,
+  ShoppingBag,
   Store,
   Tags,
   Truck,
@@ -55,6 +56,7 @@ const groups = [
     label: "Sell",
     items: [
       { title: "Sales", url: "/sales", icon: Receipt },
+      { title: "Orders", url: "/orders", icon: ShoppingBag },
       { title: "Customers", url: "/customers", icon: Users },
     ],
   },

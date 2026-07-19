@@ -27,6 +27,7 @@ export interface Category {
 export interface Product {
   _id: string;
   name: string;
+  description?: string;
   sku: string;
   barcode?: string;
   categoryId?: string;
@@ -184,6 +185,54 @@ export interface Expense {
   amount: number;
   note?: string;
   createdAt?: string;
+}
+
+export interface OrderItem {
+  productId: string;
+  name: string;
+  sku?: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
+export type OrderStatus = "pending" | "confirmed" | "fulfilled" | "cancelled";
+
+export interface Order {
+  _id: string;
+  orderNumber?: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+  deliveryAddress?: string;
+  fulfillmentType?: "pickup" | "delivery";
+  items: OrderItem[];
+  subtotal: number;
+  tax?: number;
+  total: number;
+  status: OrderStatus | string;
+  notes?: string;
+  linkedSaleId?: string;
+  createdAt?: string;
+}
+
+/** Shape returned by the public, unauthenticated /public/products endpoint. */
+export interface PublicProduct {
+  _id: string;
+  name: string;
+  description?: string;
+  sku?: string;
+  category?: { _id: string; name: string } | null;
+  price: number;
+  imageUrl?: string;
+  unit?: string;
+  inStock: boolean;
+}
+
+export interface PublicCategory {
+  _id: string;
+  name: string;
+  description?: string;
 }
 
 export interface DashboardSummary {

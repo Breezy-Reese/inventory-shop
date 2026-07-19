@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -52,6 +53,7 @@ export const Route = createFileRoute("/_shell/products")({
 
 const emptyForm = {
   name: "",
+  description: "",
   sku: "",
   barcode: "",
   categoryId: "",
@@ -59,6 +61,7 @@ const emptyForm = {
   sellingPrice: "",
   unit: "pcs",
   lowStockThreshold: "5",
+  imageUrl: "",
 };
 
 function ProductsPage() {
@@ -83,6 +86,7 @@ function ProductsPage() {
     setEditing(p);
     setForm({
       name: p.name,
+      description: p.description ?? "",
       sku: p.sku ?? "",
       barcode: p.barcode ?? "",
       categoryId: p.categoryId ?? "",
@@ -90,6 +94,7 @@ function ProductsPage() {
       sellingPrice: String(p.sellingPrice ?? ""),
       unit: p.unit ?? "pcs",
       lowStockThreshold: String(p.lowStockThreshold ?? 5),
+      imageUrl: p.imageUrl ?? "",
     });
     setOpen(true);
   };
@@ -131,6 +136,7 @@ function ProductsPage() {
   const submit = () => {
     save.mutate({
       name: form.name,
+      description: form.description || undefined,
       sku: form.sku,
       barcode: form.barcode || undefined,
       categoryId: form.categoryId || undefined,
@@ -138,6 +144,7 @@ function ProductsPage() {
       sellingPrice: Number(form.sellingPrice) || 0,
       unit: form.unit,
       lowStockThreshold: Number(form.lowStockThreshold) || 0,
+      imageUrl: form.imageUrl || undefined,
     });
   };
 
@@ -161,6 +168,38 @@ function ProductsPage() {
                 <div className="sm:col-span-2">
                   <Label>Name</Label>
                   <Input value={form.name} onChange={(e) => set("name")(e.target.value)} />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    rows={2}
+                    placeholder="Shown to customers on the online storefront"
+                    value={form.description}
+                    onChange={(e) => set("description")(e.target.value)}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Label>Image URL</Label>
+                  <div className="flex items-start gap-3">
+                    <Input
+                      placeholder="https://…"
+                      value={form.imageUrl}
+                      onChange={(e) => set("imageUrl")(e.target.value)}
+                    />
+                    {form.imageUrl && (
+                      <img
+                        src={form.imageUrl}
+                        alt="Preview"
+                        className="size-9 shrink-0 rounded-md border object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.visibility = "hidden";
+                        }}
+                      />
+                    )}
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Used on the product list and the customer storefront.
+                  </p>
                 </div>
                 <div>
                   <Label>SKU</Label>
@@ -270,7 +309,25 @@ function ProductsPage() {
                     p.stock <= p.lowStockThreshold;
                   return (
                     <TableRow key={p._id}>
-                      <TableCell className="font-medium">{p.name}</TableCell>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2.5">
+                          {p.imageUrl ? (
+                            <img
+                              src={p.imageUrl}
+                              alt={p.name}
+                              className="size-8 shrink-0 rounded-md border object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = "none";
+                              }}
+                            />
+                          ) : (
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-md border bg-muted text-muted-foreground">
+                              <Package className="size-3.5" />
+                            </div>
+                          )}
+                          {p.name}
+                        </div>
+                      </TableCell>
                       <TableCell className="tabular-numbers">{p.sku || "—"}</TableCell>
                       <TableCell>{categoryName(p)}</TableCell>
                       <TableCell className="tabular-numbers text-right">
