@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const settingsSchema = new mongoose.Schema(
   {
     storeName: { type: String, default: "My Store" },
-    currency: { type: String, default: "USD" },
+    currency: { type: String, default: "KES" },
     taxRate: { type: Number, default: 0 },
     receiptFooter: { type: String, default: "Thank you for shopping with us!" },
     lowStockThreshold: { type: Number, default: 5 },

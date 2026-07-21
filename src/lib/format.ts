@@ -1,7 +1,7 @@
-export function formatMoney(value: number | undefined | null, currency = "USD"): string {
+export function formatMoney(value: number | undefined | null, currency = "KES"): string {
   if (value === undefined || value === null || Number.isNaN(value)) return "—";
   try {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat("en-KE", {
       style: "currency",
       currency,
       maximumFractionDigits: 2,

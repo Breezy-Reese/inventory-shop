@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_shell/settings")({
 
 const empty: Settings = {
   storeName: "",
-  currency: "USD",
+  currency: "KES",
   taxRate: 0,
   receiptFooter: "",
   lowStockThreshold: 5,
@@ -86,7 +86,7 @@ function SettingsPage() {
             <Input
               value={form.currency ?? ""}
               onChange={(e) => setForm({ ...form, currency: e.target.value.toUpperCase() })}
-              placeholder="USD"
+              placeholder="KES"
             />
           </div>
           <div>
@@ -106,9 +106,7 @@ function SettingsPage() {
               type="number"
               min={0}
               value={form.lowStockThreshold ?? 0}
-              onChange={(e) =>
-                setForm({ ...form, lowStockThreshold: Number(e.target.value) || 0 })
-              }
+              onChange={(e) => setForm({ ...form, lowStockThreshold: Number(e.target.value) || 0 })}
             />
           </div>
           <div>
