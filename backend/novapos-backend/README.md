@@ -31,7 +31,7 @@ and an admin login):
 npm run seed
 ```
 
-This creates the login `admin@novapos.dev` / `password123` (the very first
+This creates the login  (the very first
 registered/seeded user automatically becomes `admin`).
 
 Start the API:

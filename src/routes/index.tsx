@@ -26,6 +26,8 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { ShopSidebar } from "@/components/layout/ShopSidebar";
 import { api, ApiError } from "@/lib/api";
 import { formatMoney } from "@/lib/format";
 import type { PublicCategory, PublicProduct } from "@/lib/types";
@@ -205,120 +207,128 @@ function ShopPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Store className="size-4.5" />
+    <SidebarProvider>
+      <ShopSidebar
+        categories={categories.data ?? []}
+        activeCategoryId={categoryId}
+        onSelectCategory={(id) => scrollToProducts(id)}
+      />
+      <div className="min-h-screen w-full flex-1 bg-background">
+        <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur">
+          <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+            <div className="flex items-center gap-2.5">
+              <SidebarTrigger />
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Store className="size-4.5" />
+              </div>
+              <div>
+                <p className="font-display text-sm font-semibold leading-tight">NovaPOS Shop</p>
+                <p className="text-xs text-muted-foreground">Browse &amp; order online</p>
+              </div>
             </div>
-            <div>
-              <p className="font-display text-sm font-semibold leading-tight">NovaPOS Shop</p>
-              <p className="text-xs text-muted-foreground">Browse &amp; order online</p>
-            </div>
+            <Button variant="outline" onClick={() => setCartOpen(true)} className="relative">
+              <ShoppingCart className="size-4" />
+              Cart
+              {cartCount > 0 && (
+                <Badge className="absolute -right-2 -top-2 size-5 justify-center rounded-full p-0">
+                  {cartCount}
+                </Badge>
+              )}
+            </Button>
           </div>
-          <Button variant="outline" onClick={() => setCartOpen(true)} className="relative">
-            <ShoppingCart className="size-4" />
-            Cart
-            {cartCount > 0 && (
-              <Badge className="absolute -right-2 -top-2 size-5 justify-center rounded-full p-0">
-                {cartCount}
-              </Badge>
-            )}
-          </Button>
-        </div>
-      </header>
+        </header>
 
-      {/* Hero */}
-      <section className="border-b bg-gradient-to-b from-primary/5 to-background">
-        <div className="mx-auto max-w-6xl px-4 py-12 text-center sm:py-16">
-          <p className="font-display text-2xl font-semibold sm:text-4xl">
-            Everything you need, a click away
-          </p>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground sm:text-base">
-            Browse our full catalog, add what you like to your cart, and order online for pickup or
-            delivery.
-          </p>
-          <Button size="lg" className="mt-6" onClick={() => scrollToProducts()}>
-            Browse products <ArrowRight className="size-4" />
-          </Button>
-        </div>
+        {/* Hero */}
+        <section className="border-b bg-gradient-to-b from-primary/5 to-background">
+          <div className="mx-auto max-w-6xl px-4 py-12 text-center sm:py-16">
+            <p className="font-display text-2xl font-semibold sm:text-4xl">
+              Everything you need, a click away
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground sm:text-base">
+              Browse our full catalog, add what you like to your cart, and order online for pickup
+              or delivery.
+            </p>
+            <Button size="lg" className="mt-6" onClick={() => scrollToProducts()}>
+              Browse products <ArrowRight className="size-4" />
+            </Button>
+          </div>
 
-        {(categories.data ?? []).length > 0 && (
-          <div className="mx-auto max-w-6xl px-4 pb-10">
-            <p className="mb-3 text-sm font-medium text-muted-foreground">Shop by category</p>
-            <div className="flex flex-wrap gap-2.5">
-              {(categories.data ?? []).map((c) => (
-                <button
-                  key={c._id}
-                  onClick={() => scrollToProducts(c._id)}
-                  className="rounded-full border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary hover:bg-primary/5"
-                >
-                  {c.name}
-                </button>
+          {(categories.data ?? []).length > 0 && (
+            <div className="mx-auto max-w-6xl px-4 pb-10">
+              <p className="mb-3 text-sm font-medium text-muted-foreground">Shop by category</p>
+              <div className="flex flex-wrap gap-2.5">
+                {(categories.data ?? []).map((c) => (
+                  <button
+                    key={c._id}
+                    onClick={() => scrollToProducts(c._id)}
+                    className="rounded-full border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary hover:bg-primary/5"
+                  >
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+
+        <main ref={productsRef} className="mx-auto max-w-6xl scroll-mt-4 px-4 py-6">
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <div className="relative max-w-sm flex-1">
+              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search products…"
+                className="pl-9"
+              />
+            </div>
+            <Select value={categoryId} onValueChange={setCategoryId}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="All categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All categories</SelectItem>
+                {(categories.data ?? []).map((c) => (
+                  <SelectItem key={c._id} value={c._id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {products.isPending && (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="aspect-square w-full rounded-xl" />
               ))}
             </div>
-          </div>
-        )}
-      </section>
+          )}
 
-      <main ref={productsRef} className="mx-auto max-w-6xl scroll-mt-4 px-4 py-6">
-        <div className="mb-6 flex flex-wrap items-center gap-3">
-          <div className="relative max-w-sm flex-1">
-            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search products…"
-              className="pl-9"
-            />
-          </div>
-          <Select value={categoryId} onValueChange={setCategoryId}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="All categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
-              {(categories.data ?? []).map((c) => (
-                <SelectItem key={c._id} value={c._id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+          {products.isError && (
+            <div className="rounded-xl border border-dashed p-10 text-center">
+              <p className="font-medium">Store is unavailable right now</p>
+              <p className="mt-1 text-sm text-muted-foreground">{products.error.message}</p>
+            </div>
+          )}
 
-        {products.isPending && (
+          {!products.isPending && !products.isError && filtered.length === 0 && (
+            <div className="rounded-xl border border-dashed p-10 text-center">
+              <ShoppingBag className="mx-auto mb-2 size-8 text-muted-foreground" />
+              <p className="font-medium">No products found</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Try a different search or category.
+              </p>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-square w-full rounded-xl" />
+            {filtered.map((p) => (
+              <ProductCard key={p._id} product={p} onAdd={addToCart} />
             ))}
           </div>
-        )}
-
-        {products.isError && (
-          <div className="rounded-xl border border-dashed p-10 text-center">
-            <p className="font-medium">Store is unavailable right now</p>
-            <p className="mt-1 text-sm text-muted-foreground">{products.error.message}</p>
-          </div>
-        )}
-
-        {!products.isPending && !products.isError && filtered.length === 0 && (
-          <div className="rounded-xl border border-dashed p-10 text-center">
-            <ShoppingBag className="mx-auto mb-2 size-8 text-muted-foreground" />
-            <p className="font-medium">No products found</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Try a different search or category.
-            </p>
-          </div>
-        )}
-
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-          {filtered.map((p) => (
-            <ProductCard key={p._id} product={p} onAdd={addToCart} />
-          ))}
-        </div>
-      </main>
+        </main>
+      </div>
 
       {/* Cart drawer */}
       <Sheet open={cartOpen} onOpenChange={setCartOpen}>
@@ -504,6 +514,6 @@ function ShopPage() {
           )}
         </SheetContent>
       </Sheet>
-    </div>
+    </SidebarProvider>
   );
 }
